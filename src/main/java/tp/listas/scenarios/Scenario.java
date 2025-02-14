@@ -12,6 +12,7 @@ public class Scenario {
     public int threads;
     public int operationsPerThread;
     public int probabilityAdd;
+    public Semaphore start;
     public Semaphore end;
 
     public Scenario(int threads, int operationsPerThread, int probabilityAdd, SynchronizedList<Integer> myList) {
@@ -19,6 +20,7 @@ public class Scenario {
         this.operationsPerThread = operationsPerThread;
         this.probabilityAdd = probabilityAdd;
         this.myList = myList;
+        start = new Semaphore(0, true);
         end = new Semaphore(0, true);
     }
 
@@ -28,11 +30,11 @@ public class Scenario {
         long startTime = System.nanoTime();
 
         for (int i = 0; i < threads; i++) {
-            OperationThread operationThread = new OperationThread((int) (Math.random() * 100) < probabilityAdd ? ADD : REMOVE, operationsPerThread, myList, end);
+            OperationThread operationThread = new OperationThread((int) (Math.random() * 100) < probabilityAdd ? ADD : REMOVE, operationsPerThread, myList, start, end);
             Thread thread = new Thread(operationThread);
             thread.start();
         }
-
+        start.release(threads);
         end.acquireUninterruptibly(threads);
         long endingTime = System.nanoTime();
         return (float)(endingTime-startTime)/1000000000; 

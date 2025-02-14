@@ -8,12 +8,14 @@ public class OperationThread implements Runnable {
     public SynchronizedList<Integer> list;
     public int operationType;
     public int operations;
+    public Semaphore start;
     public Semaphore end;
 
-    public OperationThread(int operationType, int operations, SynchronizedList<Integer> list, Semaphore end) {
+    public OperationThread(int operationType, int operations, SynchronizedList<Integer> list, Semaphore start, Semaphore end) {
         this.operationType = operationType;
         this.operations = operations;
         this.list = list;
+        this.start = start;
         this.end = end;
     }
 
@@ -21,6 +23,7 @@ public class OperationThread implements Runnable {
     @Override
     public void run() {
         //System.out.println("Running operation thread");
+        start.acquireUninterruptibly();
         try{
             for (int i = 0; i < operations; i++) {
                 if (operationType == Scenario.ADD) {
@@ -28,7 +31,7 @@ public class OperationThread implements Runnable {
                 } else {
                     remove();
                 }
-                int sleepTime = (int) (Math.random() * 300);
+                int sleepTime = (int) (50);
                 try {
                     Thread.sleep(sleepTime);
                 } catch (InterruptedException e) {
