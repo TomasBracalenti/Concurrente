@@ -1,14 +1,13 @@
 package tp.listas;
 
+import java.io.FileWriter;
+import java.io.IOException;
+
 import tp.listas.scenarios.Scenario;
 
 import java.util.List;
 
 public class Main {
-    static int operationsPerThread = 15;
-    static int threads = 15000;
-    static int probabilityAdd = 50;
-
     public enum ListType {
         FINE_GRAINED(0),
         OPTIMISTIC(1),
@@ -35,29 +34,7 @@ public class Main {
     }
 
     public static void main(String[] args) {
-
-        //OptimisticListScenarios();
-        //NonBlockingListScenarios();
-        //FineGrainedListScenarios();
-        //NonBlockingList<Integer> nonBlockingList = new NonBlockingList<>();
-        //System.out.println("ALGOOOO");
         Test();
-        //nonBlockingList.add(1);
-        //System.out.println("Luego de agregar 1:");
-        //nonBlockingList.print();
-        //nonBlockingList.print();
-        //nonBlockingList.add(2);
-        //System.out.println("Luego de agregar 2:");
-        //nonBlockingList.print();
-        //nonBlockingList.remove(1);
-        //System.out.println("Elimino 1:");
-        //nonBlockingList.print();
-        //nonBlockingList.remove(1);
-        //System.out.println("Elimino 1:");
-        //nonBlockingList.print();
-        //FineGrainedList<Integer> list = new FineGrainedList<>();
-        //list.remove(Integer.valueOf(0));
-        //list.remove(Integer.valueOf(0));
     }
 
     public static void Test() {
@@ -74,23 +51,46 @@ public class Main {
         int probabilities[] = {0, 50, 100};
         int threads[] = {7500, 15000, 30000};
         int operationsPerThread[] = {5, 10, 20};
-        float times[][][][][] = new float[3][3][3][3][3];
-        System.out.println("Trash test...");
-        RunScenarios(threads[0], operationsPerThread[0], probabilities[0]);
-        System.out.println("Starting tests....");
-        for (int k = 0; k < 3; k++) {
-            for (int l = 0; l < 3; l++) {
-                for (int m = 0; m < 3; m++) {
-                    var currentThread = threads[k];
-                    var currentOperationsPerThread = operationsPerThread[l];
-                    var currentProbabilityAdd = probabilities[m];
-                    for (int n = 0; n < 3; n++) {
-                        times[k][l][m][n] = RunScenarios(currentThread, currentOperationsPerThread, currentProbabilityAdd);
-                        ;
+        int TESTS = 10;
+        float times[][][][][] = new float[3][3][3][10][3];
+
+        try (FileWriter csvWriter = new FileWriter("test_results.csv")) {
+            csvWriter.append("Test,Threads,Operations per Thread,Probability Add,Avg\n");
+
+            for (int k = 0; k < 3; k++) {
+                for (int l = 0; l < 3; l++) {
+                    for (int m = 0; m < 3; m++) {
+                        var currentThread = threads[k];
+                        var currentOperationsPerThread = operationsPerThread[l];
+                        var currentProbabilityAdd = probabilities[m];
+                        for (int n = 0; n < TESTS; n++) {
+                            times[k][l][m][n] = RunScenarios(currentThread, currentOperationsPerThread, currentProbabilityAdd);
+                        }
+                        for (int i = 0; i < 3; i++) {
+                            float avgTime = 0;
+                            for (int n = 0; n < TESTS; n++) {
+                                avgTime += times[k][l][m][n][i];
+                            }
+                            avgTime /= TESTS;
+                            csvWriter.append(ListType.fromValue(i).name())
+                                    .append(",")
+                                    .append(String.valueOf(currentThread))
+                                    .append(",")
+                                    .append(String.valueOf(currentOperationsPerThread))
+                                    .append(",")
+                                    .append(String.valueOf(currentProbabilityAdd))
+                                    .append(",")
+                                    .append(String.valueOf(avgTime))
+                                    .append("\n");
+                            System.out.println("Finish test " + ListType.fromValue(i) + " with threads: " + threads[k] + ", operations per thread: " + operationsPerThread[l] + ", probability add: " + probabilities[m]);
+                            csvWriter.flush();
+                        }
                     }
-                    System.out.println("Finished tests with threads: " + currentThread + ", operations per thread: " + currentOperationsPerThread + ", probability add: " + currentProbabilityAdd);
                 }
             }
+
+        } catch (IOException e) {
+            e.printStackTrace();
         }
         System.out.println("Printing results...");
         for (int k = 0; k < 3; k++) {

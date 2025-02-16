@@ -1,0 +1,4 @@
+Test,Threads,Operations per Thread,Probability Add,Avg
+FINE_GRAINED,7500,5,0,1.0775774
+OPTIMISTIC,7500,5,0,1.108661
+NON_BLOCKING,7500,5,0,1.0968659
