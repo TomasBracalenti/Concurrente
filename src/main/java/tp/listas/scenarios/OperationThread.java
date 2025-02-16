@@ -46,11 +46,11 @@ public class OperationThread implements Runnable {
 
     public void add() {
         //System.out.println("Adding");
-        list.add(Integer.valueOf((int)Math.random()*10));
+        list.add(Integer.valueOf((int)Math.random()*100000));
     }
 
     public void remove() {
         //System.out.println("Removing");
-        list.remove(Integer.valueOf((int)Math.random()*10));
+        list.remove(Integer.valueOf((int)Math.random()*100000));
     }
 }
