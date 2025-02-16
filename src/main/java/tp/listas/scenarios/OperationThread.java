@@ -31,7 +31,7 @@ public class OperationThread implements Runnable {
                 } else {
                     remove();
                 }
-                int sleepTime = (int) (50);
+                int sleepTime = (int) (Math.random()*100);
                 try {
                     Thread.sleep(sleepTime);
                 } catch (InterruptedException e) {
@@ -46,11 +46,11 @@ public class OperationThread implements Runnable {
 
     public void add() {
         //System.out.println("Adding");
-        list.add(1);
+        list.add(Integer.valueOf((int)Math.random()*10));
     }
 
     public void remove() {
         //System.out.println("Removing");
-        list.remove(1);
+        list.remove(Integer.valueOf((int)Math.random()*10));
     }
 }

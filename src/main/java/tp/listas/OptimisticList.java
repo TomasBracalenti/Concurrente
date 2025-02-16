@@ -18,7 +18,8 @@ public class OptimisticList<T> implements SynchronizedList<T> {
         while (true) {
             Node<T> pred = head;
             Node<T> curr = pred.next;
-            while (curr.key < key && curr != tail) {
+            if (curr == tail) return false;
+            while (curr.key < key) {
                 pred = curr;
                 curr = curr.next;
             }
@@ -52,7 +53,8 @@ public class OptimisticList<T> implements SynchronizedList<T> {
         while (true) {
             Node<T> pred = head;
             Node<T> curr = pred.next;
-            while (curr.key < key && curr != tail) {
+            if (curr == tail) return false;
+            while (curr.key < key) {
                 pred = curr;
                 curr = curr.next;
             }

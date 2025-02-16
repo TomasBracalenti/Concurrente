@@ -26,7 +26,12 @@ public class Scenario {
 
     public float run() {
         //System.out.println("Running scenario");
-
+        try {
+            Thread.sleep(4000);
+        } catch (Exception e) {
+            // TODO: handle exception
+            e.printStackTrace();
+        }
         long startTime = System.nanoTime();
 
         for (int i = 0; i < threads; i++) {

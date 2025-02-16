@@ -22,7 +22,8 @@ public class FineGrainedList<T> implements SynchronizedList<T> {
             Node<T> curr = pred.next;
             curr.lock();
             try {
-                while (curr.key < key && curr != tail) {
+                if (curr == tail) return false;
+                while (curr.key < key) {
                     pred.unlock();
                     pred = curr;
                     curr = curr.next;
@@ -51,15 +52,18 @@ public class FineGrainedList<T> implements SynchronizedList<T> {
         Node<T> curr = null;
         int key = data.hashCode();
         head.lock();
+        pred = head;
         try {
-            pred = head;
             curr = pred.next;
+            if (curr == null) System.out.println("ACÁ");
             curr.lock();
             try {
-                while (curr.key < key && curr != tail) {
+                if (curr == tail) return false;
+                while (curr.key < key) {
                     pred.unlock();
                     pred = curr;
                     curr = curr.next;
+                    if (curr == null) System.out.println("ACÁ TAMBIÉN?");
                     curr.lock();
                 }
                 if (curr.key == key) {
