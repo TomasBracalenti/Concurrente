@@ -48,18 +48,18 @@ public class Main {
         // Una dimension para variar la cantidad de operaciones por thread (l)
         // Una dimension para variar la cantidad de tests (n)
 
-        int probabilities[] = {0, 50, 100};
+        int probabilities[] = {0, 25, 50, 75, 100};
         int threads[] = {7500, 15000, 30000};
         int operationsPerThread[] = {5, 10, 20};
         int TESTS = 10;
-        float times[][][][][] = new float[3][3][3][10][3];
+        float times[][][][][] = new float[threads.length][operationsPerThread.length][probabilities.length][TESTS][3];
 
         try (FileWriter csvWriter = new FileWriter("test_results.csv")) {
             csvWriter.append("Test,Threads,Operations per Thread,Probability Add,Avg\n");
 
-            for (int k = 0; k < 3; k++) {
-                for (int l = 0; l < 3; l++) {
-                    for (int m = 0; m < 3; m++) {
+            for (int k = 0; k < threads.length; k++) {
+                for (int l = 0; l < operationsPerThread.length; l++) {
+                    for (int m = 0; m < probabilities.length; m++) {
                         var currentThread = threads[k];
                         var currentOperationsPerThread = operationsPerThread[l];
                         var currentProbabilityAdd = probabilities[m];
@@ -93,9 +93,9 @@ public class Main {
             e.printStackTrace();
         }
         System.out.println("Printing results...");
-        for (int k = 0; k < 3; k++) {
-            for (int l = 0; l < 3; l++) {
-                for (int m = 0; m < 3; m++) {
+        for (int k = 0; k < threads.length; k++) {
+            for (int l = 0; l < operationsPerThread.length; l++) {
+                for (int m = 0; m < probabilities.length; m++) {
                     for (int i = 0; i < 3; i++) {
                         System.out.println("Results for test " + ListType.fromValue(i) + " with threads: " + threads[k] + ", operations per thread: " + operationsPerThread[l] + ", probability add: " + probabilities[m]);
                         printTestResults(times[k][l][m][0][i], times[k][l][m][1][i], times[k][l][m][2][i]);
