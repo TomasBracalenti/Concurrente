@@ -49,7 +49,7 @@ test_cases = df["Test"].unique()
 diff_list = []
 for test1, test2 in itertools.combinations(test_cases, 2):
     df_temp = df_pivot.copy()
-    df_temp["Difference"] = (df_temp[test2] - df_temp[test1]) / df_temp[test1]
+    df_temp["Difference"] = 100 * (df_temp[test2] - df_temp[test1]) / df_temp[test1]
     df_temp["Comparison"] = f"{test2} - {test1}"  # Label for the difference
     diff_list.append(df_temp)
 

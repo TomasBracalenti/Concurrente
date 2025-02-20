@@ -7,5 +7,5 @@ public interface SynchronizedList<T> {
 
     public boolean remove(T data);
 
-
+    public void print();
 }

@@ -32,13 +32,14 @@ public class Scenario {
             // TODO: handle exception
             e.printStackTrace();
         }
-        long startTime = System.nanoTime();
 
         for (int i = 0; i < threads; i++) {
             OperationThread operationThread = new OperationThread((int) (Math.random() * 100) < probabilityAdd ? ADD : REMOVE, operationsPerThread, myList, start, end);
             Thread thread = new Thread(operationThread);
             thread.start();
         }
+
+        long startTime = System.nanoTime();
         start.release(threads);
         end.acquireUninterruptibly(threads);
         long endingTime = System.nanoTime();
