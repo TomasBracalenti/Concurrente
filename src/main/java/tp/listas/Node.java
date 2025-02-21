@@ -1,11 +1,10 @@
 package tp.listas;
 
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
+import java.util.concurrent.Semaphore;
 
 public class Node<T> {
 
-    private final Lock lock = new ReentrantLock();
+    private final Semaphore semaphore = new Semaphore(1, true);
     public T data;
     //Hash of the object
     public int key;
@@ -20,10 +19,10 @@ public class Node<T> {
     }
 
     public void lock(){
-        lock.lock();
+        semaphore.acquireUninterruptibly();
     }
 
     public void unlock(){
-        lock.unlock();
+        semaphore.release();
     }
 }
