@@ -51,7 +51,7 @@ public class Main {
         int probabilities[] = {0, 25, 50, 75, 100};
         int threads[] = {7500, 15000, 30000};
         int operationsPerThread[] = {5, 10, 20};
-        int TESTS = 10;
+        int TESTS = 1;
         float times[][][][][] = new float[threads.length][operationsPerThread.length][probabilities.length][TESTS][3];
 
         try (FileWriter csvWriter = new FileWriter("test_results.csv")) {
