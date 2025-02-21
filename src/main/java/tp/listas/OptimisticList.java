@@ -81,11 +81,26 @@ public class OptimisticList<T> implements SynchronizedList<T> {
 
     public boolean contains(T data) {
         int key = data.hashCode();
-        Node<T> curr = head;
+        while (true) {
+        Node<T> pred = head;
+        Node<T> curr = pred.next;
         while (curr.key < key) {
-            curr = curr.next;
+        pred = curr; curr = curr.next;
         }
-        return curr.key == key && curr != tail;
+        pred.lock();
+        try {
+        curr.lock();
+        try {
+        if (validate(pred, curr)) {
+        return (curr.key == key);
+        }
+        } finally {
+        curr.unlock();
+        }
+        } finally {
+        pred.unlock();
+        }
+        }
     }
 
     private boolean validate(Node<T> pred, Node<T> curr) {

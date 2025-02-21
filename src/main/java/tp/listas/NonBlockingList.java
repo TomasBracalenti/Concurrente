@@ -12,80 +12,68 @@ public class NonBlockingList<T> implements SynchronizedList<T>{
         head.next = new AtomicMarkableReference<LocklessNode<T>>(tail, false);
     }
 
-    public boolean add(T data) {
-        if (data == null) {
-            return false;
-        }
-        while (true) {
-            LocklessNode<T> nodes[] = find(data);
-            LocklessNode<T> pred = nodes[0];
-            LocklessNode<T> curr = nodes[1];
-            LocklessNode<T> succ = nodes[2];
-            if (curr != null)
-                return false;
-            LocklessNode<T> node = new LocklessNode<T>(data);
-            node.next = new AtomicMarkableReference<LocklessNode<T>>(succ,false);
-            if (pred.next.compareAndSet(succ, node, false, false))
-                return true;
+    class Window {
+        public LocklessNode<T> pred, curr;
+        Window(LocklessNode<T> myPred, LocklessNode<T> myCurr) {
+            pred = myPred; curr = myCurr;
         }
     }
 
-    public boolean remove(T data) {
-        if (data == null) {
-            return false;
-        }
-        while (true) {
-            LocklessNode<T> nodes[] = find(data);
-            LocklessNode<T> pred = nodes[0];
-            LocklessNode<T> curr = nodes[1];
-            LocklessNode<T> succ = nodes[2];
-            if (curr == null){
-                return false;
-            }
-            if (!curr.next.attemptMark(succ,true))
-                continue;
-            pred.next.compareAndSet(curr, succ, false, false);
-            return true;
-        }
-    }
-
-    private LocklessNode<T>[] find(T data) {
-        LocklessNode<T> nodes[] = new LocklessNode[3];
-        boolean[] cmark = new boolean[1];
-        int key = data.hashCode();
-        tryAgain: while (true) {
-            nodes[0] = head;
-            nodes[1] = nodes[0].next.getReference();
+    Window find(LocklessNode<T> head, int key) {
+        LocklessNode<T> pred = null, curr = null, succ = null;
+        boolean[] marked = {false};
+        boolean snip;
+        retry: while (true) {
+            pred = head;
+            curr = pred.next.getReference();
             while (true) {
-                if (nodes[1] == tail){
-                    nodes[1] = null;
-                    nodes[2] = tail;
-                    return nodes;
+                succ = curr.next.get(marked);
+                while (marked[0]) {
+                    snip = pred.next.compareAndSet(curr, succ, false, false);
+                    if (!snip) continue retry;
+                    curr = succ;
+                    succ = curr.next.get(marked);
                 }
-                nodes[2] = nodes[1].next.get(cmark);
-                int ckey = nodes[1].key;
-                if (!cmark[0]) {
-                    if (nodes[1].data == data){
-                        return nodes;
-                    }
-                    else
-                        if (ckey <= key){
-                            nodes[0] = nodes[1];
-                            nodes[1] = nodes[0].next.getReference();
-                        }
-                        else{
-                            nodes[2] = nodes[1];
-                            nodes[1] = null;
-                            return nodes;
-                        }
+                if (curr.key >= key)
+                    return new Window(pred, curr);
+                pred = curr;
+                curr = succ;
+            }
+        }
+    }
+
+    public boolean add(T item) {
+        int key = item.hashCode();
+        while (true) {
+            Window window = find(head, key);
+            LocklessNode<T> pred = window.pred, curr = window.curr;
+            if (curr.key == key) {
+                return false;
+            } else {
+                LocklessNode<T> node = new LocklessNode<T>(item);
+                node.next = new AtomicMarkableReference<LocklessNode<T>>(curr, false);
+                if (pred.next.compareAndSet(curr, node, false, false)) {
+                    return true;
                 }
-                else {
-                    if(nodes[0].next.compareAndSet(nodes[1], nodes[2], false, false)){
-                        nodes[1] = nodes[2];
-                    }   
-                    else
-                        continue tryAgain;
-                }
+            }
+        }
+    }
+
+    public boolean remove(T item) {
+        int key = item.hashCode();
+        boolean snip;
+        while (true) {
+            Window window = find(head, key);
+            LocklessNode<T> pred = window.pred, curr = window.curr;
+            if (curr.key != key) {
+                return false;
+            } else {
+                LocklessNode<T> succ = curr.next.getReference();
+                snip = curr.next.compareAndSet(succ, succ, false, true);
+                if (!snip)
+                    continue;
+                pred.next.compareAndSet(curr, succ, false, false);
+                return true;
             }
         }
     }
