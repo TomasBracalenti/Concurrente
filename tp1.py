@@ -23,7 +23,7 @@ if g._legend:
 
 # Manually add and position the legend
 g.add_legend()
-g._legend.set_bbox_to_anchor((0.98, 0.15))  # Move legend outside the plot
+g._legend.set_bbox_to_anchor((0.98, 0.5))  # Move legend outside the plot
 g._legend.set_frame_on(True)  # Optional: Add a border around the legend
 
 plt.tight_layout()
@@ -70,7 +70,7 @@ if g._legend:
 
 # Manually add and position the legend
 g.add_legend()
-g._legend.set_bbox_to_anchor((0.98, 0.7))  # Move legend outside the plot
+g._legend.set_bbox_to_anchor((0.98, 0.5))  # Move legend outside the plot
 g._legend.set_frame_on(True)  # Optional: Add a border around the legend
 
 plt.tight_layout()

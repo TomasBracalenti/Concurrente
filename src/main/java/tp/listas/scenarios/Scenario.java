@@ -34,14 +34,14 @@ public class Scenario {
             e.printStackTrace();
         }
 
-        long startTime = System.nanoTime();
         for (int i = 0; i < threads; i++) {
             OperationThread operationThread = new OperationThread((int) (Math.random() * 100) < probabilityAdd ? ADD : REMOVE, operationsPerThread, myList, start, end);
             Thread thread = new Thread(operationThread);
             thread.start();
         }
 
-        /*        start.release(threads);*/
+        start.release(threads);
+        long startTime = System.nanoTime();
         end.acquireUninterruptibly(threads);
         long endingTime = System.nanoTime();
         return (float) (endingTime - startTime) / 1000000000;

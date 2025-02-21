@@ -24,7 +24,7 @@ public class OperationThread implements Runnable {
     @Override
     public void run() {
         //System.out.println("Running operation thread");
-/*        start.acquireUninterruptibly();*/
+        start.acquireUninterruptibly();
         try {
             for (int i = 0; i < operations; i++) {
                 if (operationType == Scenario.ADD) {
