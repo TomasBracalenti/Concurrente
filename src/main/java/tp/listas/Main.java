@@ -49,9 +49,9 @@ public class Main {
         // Una dimension para variar la cantidad de tests (n)
 
         int probabilities[] = {0, 25, 50, 75, 100};
-        int threads[] = {7500, 15000, 30000};
-        int operationsPerThread[] = {5, 10, 20};
-        int TESTS = 1;
+        int threads[] = {100, 1000, 5000, 10000};
+        int operationsPerThread[] = {10, 20,40,80};
+        int TESTS = 2;
         float times[][][][][] = new float[threads.length][operationsPerThread.length][probabilities.length][TESTS][3];
 
         try (FileWriter csvWriter = new FileWriter("test_results.csv")) {
@@ -92,17 +92,6 @@ public class Main {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        System.out.println("Printing results...");
-        for (int k = 0; k < threads.length; k++) {
-            for (int l = 0; l < operationsPerThread.length; l++) {
-                for (int m = 0; m < probabilities.length; m++) {
-                    for (int i = 0; i < 3; i++) {
-                        System.out.println("Results for test " + ListType.fromValue(i) + " with threads: " + threads[k] + ", operations per thread: " + operationsPerThread[l] + ", probability add: " + probabilities[m]);
-                        printTestResults(times[k][l][m][0][i], times[k][l][m][1][i], times[k][l][m][2][i]);
-                    }
-                }
-            }
-        }
 
 
     }
@@ -116,13 +105,13 @@ public class Main {
 
     public static float[] RunScenarios(int thCount, int opsPerThread, int probAdd) {
         float times[] = new float[3];
-        FineGrainedList<Integer> fineGrainedList = new FineGrainedList<>();
+        SynchronizedList<Integer> fineGrainedList = new FineGrainedList<>();
         Scenario noAdding = new Scenario(thCount, opsPerThread, probAdd, fineGrainedList);
         times[0] = noAdding.run();
-        OptimisticList<Integer> optimisticList = new OptimisticList<>();
+        SynchronizedList<Integer> optimisticList = new OptimisticList<>();
         noAdding = new Scenario(thCount, opsPerThread, probAdd, optimisticList);
         times[1] = noAdding.run();
-        NonBlockingList<Integer> nonBlockingList = new NonBlockingList<>();
+        SynchronizedList<Integer> nonBlockingList = new NonBlockingList<>();
         noAdding = new Scenario(thCount, opsPerThread, probAdd, nonBlockingList);
         times[2] = noAdding.run();
         return times;

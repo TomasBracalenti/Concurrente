@@ -2,20 +2,24 @@ package tp.listas;
 
 import java.util.concurrent.atomic.AtomicMarkableReference;
 
-public class NonBlockingList<T> implements SynchronizedList<T>{
+public class NonBlockingList<T> implements SynchronizedList<T> {
     public LocklessNode<T> head;
     public LocklessNode<T> tail;
 
     public NonBlockingList() {
         head = new LocklessNode<T>(null);
+        head.key = Integer.MIN_VALUE;
         tail = new LocklessNode<T>(null);
+        tail.key = Integer.MAX_VALUE;
         head.next = new AtomicMarkableReference<LocklessNode<T>>(tail, false);
     }
 
     class Window {
         public LocklessNode<T> pred, curr;
+
         Window(LocklessNode<T> myPred, LocklessNode<T> myCurr) {
-            pred = myPred; curr = myCurr;
+            pred = myPred;
+            curr = myCurr;
         }
     }
 
@@ -23,7 +27,8 @@ public class NonBlockingList<T> implements SynchronizedList<T>{
         LocklessNode<T> pred = null, curr = null, succ = null;
         boolean[] marked = {false};
         boolean snip;
-        retry: while (true) {
+        retry:
+        while (true) {
             pred = head;
             curr = pred.next.getReference();
             while (true) {

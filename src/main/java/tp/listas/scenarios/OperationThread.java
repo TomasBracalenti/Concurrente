@@ -1,6 +1,7 @@
 package tp.listas.scenarios;
 
 import java.util.concurrent.Semaphore;
+
 import tp.listas.SynchronizedList;
 
 public class OperationThread implements Runnable {
@@ -23,21 +24,21 @@ public class OperationThread implements Runnable {
     @Override
     public void run() {
         //System.out.println("Running operation thread");
-        start.acquireUninterruptibly();
-        try{
+/*        start.acquireUninterruptibly();*/
+        try {
             for (int i = 0; i < operations; i++) {
                 if (operationType == Scenario.ADD) {
                     add();
                 } else {
                     remove();
                 }
-                int sleepTime = (int) (Math.random()*100);
+/*                int sleepTime = (int) (Math.random()*100);
                 try {
                     Thread.sleep(sleepTime);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
-                }
-            
+                }*/
+
             }
         } finally {
             end.release();
@@ -46,11 +47,11 @@ public class OperationThread implements Runnable {
 
     public void add() {
         //System.out.println("Adding");
-        list.add(Integer.valueOf((int)(Math.random()*1000)));
+        list.add(Integer.valueOf((int) (Math.random() * 1000)));
     }
 
     public void remove() {
         //System.out.println("Removing");
-        list.remove(Integer.valueOf((int)(Math.random()*1000)));
+        list.remove(Integer.valueOf((int) (Math.random() * 1000)));
     }
 }

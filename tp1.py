@@ -14,15 +14,6 @@ g.map(plt.plot, "Probability Add", "Avg", marker="o", ms=3)
 g.set_axis_labels("Probability Add", "Avg (seconds)")
 g.add_legend()
 
-# Set the y-axis limits for each subplot
-for i, ax in enumerate(g.axes.flat):
-    if i<3:
-        ax.set_ylim(0, 2)
-    else:
-        if i<6:
-            ax.set_ylim(0, 5)
-        else:
-            ax.set_ylim(0, 15)
 
 g.fig.subplots_adjust(hspace=10, wspace=10)
 

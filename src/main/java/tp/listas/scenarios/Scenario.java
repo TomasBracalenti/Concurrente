@@ -1,6 +1,7 @@
 package tp.listas.scenarios;
 
 import java.util.concurrent.Semaphore;
+
 import tp.listas.SynchronizedList;
 
 public class Scenario {
@@ -27,23 +28,23 @@ public class Scenario {
     public float run() {
         //System.out.println("Running scenario");
         try {
-            Thread.sleep(4000);
+            Thread.sleep(100);
         } catch (Exception e) {
             // TODO: handle exception
             e.printStackTrace();
         }
 
+        long startTime = System.nanoTime();
         for (int i = 0; i < threads; i++) {
             OperationThread operationThread = new OperationThread((int) (Math.random() * 100) < probabilityAdd ? ADD : REMOVE, operationsPerThread, myList, start, end);
             Thread thread = new Thread(operationThread);
             thread.start();
         }
 
-        long startTime = System.nanoTime();
-        start.release(threads);
+        /*        start.release(threads);*/
         end.acquireUninterruptibly(threads);
         long endingTime = System.nanoTime();
-        return (float)(endingTime-startTime)/1000000000; 
+        return (float) (endingTime - startTime) / 1000000000;
     }
 }
 
