@@ -49,7 +49,7 @@ public class Main {
         int probabilities[] = {0, 25, 50, 80, 100};
         int threads[] = {100, 1000, 10000};
         int operationsPerThread[] = {10, 100, 1000};
-        int TESTS = 10;
+        int TESTS = 30;
         float times[][][][][] = new float[threads.length][operationsPerThread.length][probabilities.length][TESTS][3];
 
         try (FileWriter csvWriter = new FileWriter("test_results.csv")) {

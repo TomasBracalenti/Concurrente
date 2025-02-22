@@ -28,7 +28,7 @@ public class Scenario {
     public float run() {
         //System.out.println("Running scenario");
         try {
-            Thread.sleep(100);
+            Thread.sleep(50);
         } catch (Exception e) {
             // TODO: handle exception
             e.printStackTrace();
