@@ -26,11 +26,9 @@ public class Scenario {
     }
 
     public float run() {
-        //System.out.println("Running scenario");
         try {
             Thread.sleep(50);
         } catch (Exception e) {
-            // TODO: handle exception
             e.printStackTrace();
         }
 
@@ -40,8 +38,8 @@ public class Scenario {
             thread.start();
         }
 
-        start.release(threads);
         long startTime = System.nanoTime();
+        start.release(threads);
         end.acquireUninterruptibly(threads);
         long endingTime = System.nanoTime();
         return (float) (endingTime - startTime) / 1000000000;

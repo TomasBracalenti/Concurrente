@@ -1,11 +1,11 @@
 package tp.listas;
 
-public class OptimisticList<T> implements SynchronizedList<T> {
+public class ModifiedOptimisticList<T> implements SynchronizedList<T> {
 
     public Node<T> head;
     public Node<T> tail;
 
-    public OptimisticList() {
+    public ModifiedOptimisticList() {
         head = new Node<T>(null);
         head.key = Integer.MIN_VALUE;
         tail = new Node<T>(null);
@@ -14,10 +14,14 @@ public class OptimisticList<T> implements SynchronizedList<T> {
     }
 
     public boolean add(T data) {
+        if (data == null) {
+            return false;
+        }
         int key = data.hashCode();
         while (true) {
             Node<T> pred = head;
             Node<T> curr = pred.next;
+            if (curr == tail) return false;
             while (curr.key < key) {
                 pred = curr;
                 curr = curr.next;
@@ -29,12 +33,11 @@ public class OptimisticList<T> implements SynchronizedList<T> {
                     if (validate(pred, curr)) {
                         if (curr.key == key) {
                             return false;
-                        } else {
-                            Node<T> newNode = new Node<T>(data);
-                            newNode.next = curr;
-                            pred.next = newNode;
-                            return true;
                         }
+                        Node<T> newNode = new Node<T>(data);
+                        newNode.next = curr;
+                        pred.next = newNode;
+                        return true;
                     }
                 } finally {
                     curr.unlock();
@@ -46,10 +49,14 @@ public class OptimisticList<T> implements SynchronizedList<T> {
     }
 
     public boolean remove(T data) {
+        if (data == null) {
+            return false;
+        }
         int key = data.hashCode();
         while (true) {
             Node<T> pred = head;
             Node<T> curr = pred.next;
+            if (curr == tail) return false;
             while (curr.key < key) {
                 pred = curr;
                 curr = curr.next;

@@ -6,7 +6,9 @@ import java.io.IOException;
 import tp.listas.scenarios.Scenario;
 
 public class Main {
+
     public enum ListType {
+
         FINE_GRAINED(0),
         OPTIMISTIC(1),
         NON_BLOCKING(2);
@@ -37,45 +39,53 @@ public class Main {
 
     public static void Test() {
 
-        // Una dimension para variar la lista, en el arreglo dado por mkln (0, 1, 2)
+        // Una dimension para variar la lista, en el arreglo dado por mkln (0, 1, 2, 3, 4, 5)
         // 0 -> FineGrainedList
         // 1 -> OptimisticList
         // 2 -> NonBlockingList
+        // 3 -> ModifiedFineGrainedList
+        // 4 -> ModifiedOptimisticList
+        // 5 -> ModifiedNonBlockingList
         // Una dimension para variar la probabilidad de agregar (m)
         // Una dimension para variar la cantidad de threads (k)
         // Una dimension para variar la cantidad de operaciones por thread (l)
         // Una dimension para variar la cantidad de tests (n)
 
-        int probabilities[] = {0, 25, 50, 80, 100};
+        int probabilities[] = {0, 25, 50, 75, 100};
         int threads[] = {100, 1000, 10000};
         int operationsPerThread[] = {10, 100, 1000};
         int TESTS = 30;
-        float times[][][][][] = new float[threads.length][operationsPerThread.length][probabilities.length][TESTS][3];
+        float times[][][][][] = new float[threads.length][operationsPerThread.length][probabilities.length][TESTS][6];
 
-        try (FileWriter csvWriter = new FileWriter("test_results.csv")) {
-            csvWriter.append("Test,Threads,Operations per Thread,Probability Add,Avg\n");
-
-            for (int n = 0; n < TESTS; n++) {
-                for (int k = 0; k < threads.length; k++) {
-                    for (int l = 0; l < operationsPerThread.length; l++) {
-                        for (int m = 0; m < probabilities.length; m++) {
-                            var currentThread = threads[k];
-                            var currentOperationsPerThread = operationsPerThread[l];
-                            var currentProbabilityAdd = probabilities[m];
-                            times[k][l][m][n] = RunScenarios(currentThread, currentOperationsPerThread, currentProbabilityAdd);
-                            System.out.println("Finish test with threads: " + threads[k] + ", operations per thread: " + operationsPerThread[l] + ", probability add: " + probabilities[m]);
-                        }
+        for (int n = 0; n < TESTS; n++) {
+            for (int k = 0; k < threads.length; k++) {
+                for (int l = 0; l < operationsPerThread.length; l++) {
+                    for (int m = 0; m < probabilities.length; m++) {
+                        var currentThread = threads[k];
+                        var currentOperationsPerThread = operationsPerThread[l];
+                        var currentProbabilityAdd = probabilities[m];
+                        times[k][l][m][n] = RunScenarios(currentThread, currentOperationsPerThread, currentProbabilityAdd);
+                        System.out.println("Finish test with threads: " + threads[k] + ", operations per thread: " + operationsPerThread[l] + ", probability add: " + probabilities[m]);
                     }
                 }
             }
+        }
 
-            for (int i = 0; i < 3; i++) {
+        try {
+            FileWriter modifiedCsvWriter = new FileWriter("original_lists_test_results.csv");
+            FileWriter originalCsvWriter = new FileWriter("modified_lists_test_results.csv");
+            originalCsvWriter.append("Test,Threads,Operations per Thread,Probability Add,Avg\n");
+            modifiedCsvWriter.append("Test,Threads,Operations per Thread,Probability Add,Avg\n");
+
+            for (int i = 0; i < 6; i++) {
                 for (int k = 0; k < threads.length; k++) {
                     for (int l = 0; l < operationsPerThread.length; l++) {
                         for (int m = 0; m < probabilities.length; m++) {
                             var currentThread = threads[k];
                             var currentOperationsPerThread = operationsPerThread[l];
                             var currentProbabilityAdd = probabilities[m];
+                            var csvWriter = originalCsvWriter;
+                            if (i>2) csvWriter = modifiedCsvWriter;
                             float avgTime = 0;
                             for (int n = 0; n < TESTS; n++) {
                                 avgTime += times[k][l][m][n][i];
@@ -96,31 +106,33 @@ public class Main {
                     }
                 }
             }
+            originalCsvWriter.close();
+            modifiedCsvWriter.close();
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-    public static void printTestResults(float firstTime, float secondTime, float thirdTime) {
-        System.out.printf("%15s%10.4f%s\n", "First test:", firstTime, " seconds");
-        System.out.printf("%15s%10.4f%s\n", "Second test:", secondTime, " seconds");
-        System.out.printf("%15s%10.4f%s\n", "Third test:", thirdTime, " seconds");
-        System.out.printf("%15s%10.4f%s\n", "Avg:", (firstTime + secondTime + thirdTime) / 3, " seconds");
-    }
-
     public static float[] RunScenarios(int thCount, int opsPerThread, int probAdd) {
-        float times[] = new float[3];
+        float times[] = new float[6];
         SynchronizedList<Integer> fineGrainedList = new FineGrainedList<>();
-        Scenario noAdding = new Scenario(thCount, opsPerThread, probAdd, fineGrainedList);
-        times[0] = noAdding.run();
+        Scenario scenario = new Scenario(thCount, opsPerThread, probAdd, fineGrainedList);
+        times[0] = scenario.run();
         SynchronizedList<Integer> optimisticList = new OptimisticList<>();
-        noAdding = new Scenario(thCount, opsPerThread, probAdd, optimisticList);
-        times[1] = noAdding.run();
+        scenario = new Scenario(thCount, opsPerThread, probAdd, optimisticList);
+        times[1] = scenario.run();
         SynchronizedList<Integer> nonBlockingList = new NonBlockingList<>();
-        noAdding = new Scenario(thCount, opsPerThread, probAdd, nonBlockingList);
-        times[2] = noAdding.run();
+        scenario = new Scenario(thCount, opsPerThread, probAdd, nonBlockingList);
+        times[2] = scenario.run();
+        SynchronizedList<Integer> modifiedFineGrainedList = new ModifiedFineGrainedList<>();
+        scenario = new Scenario(thCount, opsPerThread, probAdd, modifiedFineGrainedList);
+        times[3] = scenario.run();
+        SynchronizedList<Integer> modifiedOptimisticList = new ModifiedOptimisticList<>();
+        scenario = new Scenario(thCount, opsPerThread, probAdd, modifiedOptimisticList);
+        times[4] = scenario.run();
+        SynchronizedList<Integer> modifiedNonBlockingList = new ModifiedNonBlockingList<>();
+        scenario = new Scenario(thCount, opsPerThread, probAdd, modifiedNonBlockingList);
+        times[5] = scenario.run();
         return times;
     }
-
-
 }

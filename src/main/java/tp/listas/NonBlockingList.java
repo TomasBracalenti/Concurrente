@@ -3,6 +3,7 @@ package tp.listas;
 import java.util.concurrent.atomic.AtomicMarkableReference;
 
 public class NonBlockingList<T> implements SynchronizedList<T> {
+
     public LocklessNode<T> head;
     public LocklessNode<T> tail;
 
@@ -35,7 +36,8 @@ public class NonBlockingList<T> implements SynchronizedList<T> {
                 succ = curr.next.get(marked);
                 while (marked[0]) {
                     snip = pred.next.compareAndSet(curr, succ, false, false);
-                    if (!snip) continue retry;
+                    if (!snip)
+                        continue retry;
                     curr = succ;
                     succ = curr.next.get(marked);
                 }

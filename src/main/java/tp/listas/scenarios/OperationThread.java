@@ -20,10 +20,8 @@ public class OperationThread implements Runnable {
         this.end = end;
     }
 
-
     @Override
     public void run() {
-        //System.out.println("Running operation thread");
         start.acquireUninterruptibly();
         try {
             for (int i = 0; i < operations; i++) {
@@ -32,13 +30,6 @@ public class OperationThread implements Runnable {
                 } else {
                     remove();
                 }
-/*                int sleepTime = (int) (Math.random()*100);
-                try {
-                    Thread.sleep(sleepTime);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }*/
-
             }
         } finally {
             end.release();
@@ -46,12 +37,10 @@ public class OperationThread implements Runnable {
     }
 
     public void add() {
-        //System.out.println("Adding");
         list.add(Integer.valueOf((int) (Math.random() * 1000)));
     }
 
     public void remove() {
-        //System.out.println("Removing");
         list.remove(Integer.valueOf((int) (Math.random() * 1000)));
     }
 }

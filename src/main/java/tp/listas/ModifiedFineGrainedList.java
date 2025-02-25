@@ -1,11 +1,11 @@
 package tp.listas;
 
-public class FineGrainedList<T> implements SynchronizedList<T> {
+public class ModifiedFineGrainedList<T> implements SynchronizedList<T> {
 
     public Node<T> head;
     public Node<T> tail;
 
-    public FineGrainedList() {
+    public ModifiedFineGrainedList() {
         head = new Node<T>(null);
         head.key = Integer.MIN_VALUE;
         tail = new Node<T>(null);
@@ -14,6 +14,9 @@ public class FineGrainedList<T> implements SynchronizedList<T> {
     }
 
     public boolean add(T data) {
+        if (data == null) {
+            return false;
+        }
         int key = data.hashCode();
         head.lock();
         Node<T> pred = head;
@@ -21,6 +24,7 @@ public class FineGrainedList<T> implements SynchronizedList<T> {
             Node<T> curr = pred.next;
             curr.lock();
             try {
+                if (curr == tail) return false;
                 while (curr.key < key) {
                     pred.unlock();
                     pred = curr;
@@ -43,11 +47,16 @@ public class FineGrainedList<T> implements SynchronizedList<T> {
     }
 
     public boolean remove(T data) {
+        if (data == null) {
+            return false;
+        }
+        Node<T> pred = null;
+        Node<T> curr = null;
         int key = data.hashCode();
         head.lock();
-        Node<T> pred = head;
+        pred = head;
         try {
-            Node<T> curr = pred.next;
+            curr = pred.next;
             curr.lock();
             try {
                 if (curr == tail) return false;
