@@ -11,7 +11,10 @@ public class Main {
 
         FINE_GRAINED(0),
         OPTIMISTIC(1),
-        NON_BLOCKING(2);
+        NON_BLOCKING(2),
+        MODIFIED_FINE_GRAINED(3),
+        MODIFIED_OPTIMISTIC(4),
+        MODIFIED_NON_BLOCKING(5);
 
         private final int value;
 
@@ -51,10 +54,10 @@ public class Main {
         // Una dimension para variar la cantidad de operaciones por thread (l)
         // Una dimension para variar la cantidad de tests (n)
 
-        int probabilities[] = {0, 25, 50, 75, 100};
+        int probabilities[] = {0, 100};
         int threads[] = {100, 1000, 10000};
         int operationsPerThread[] = {10, 100, 1000};
-        int TESTS = 30;
+        int TESTS = 1;
         float times[][][][][] = new float[threads.length][operationsPerThread.length][probabilities.length][TESTS][6];
 
         for (int n = 0; n < TESTS; n++) {
@@ -72,8 +75,8 @@ public class Main {
         }
 
         try {
-            FileWriter modifiedCsvWriter = new FileWriter("original_lists_test_results.csv");
-            FileWriter originalCsvWriter = new FileWriter("modified_lists_test_results.csv");
+            FileWriter originalCsvWriter = new FileWriter("original_lists_test_results.csv");
+            FileWriter modifiedCsvWriter = new FileWriter("modified_lists_test_results.csv");
             originalCsvWriter.append("Test,Threads,Operations per Thread,Probability Add,Avg\n");
             modifiedCsvWriter.append("Test,Threads,Operations per Thread,Probability Add,Avg\n");
 
