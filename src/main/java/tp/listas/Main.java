@@ -54,10 +54,10 @@ public class Main {
         // Una dimension para variar la cantidad de operaciones por thread (l)
         // Una dimension para variar la cantidad de tests (n)
 
-        int probabilities[] = {0, 100};
+        int probabilities[] = {0, 25, 50, 75, 100};
         int threads[] = {100, 1000, 10000};
         int operationsPerThread[] = {10, 100, 1000};
-        int TESTS = 1;
+        int TESTS = 20;
         float times[][][][][] = new float[threads.length][operationsPerThread.length][probabilities.length][TESTS][6];
 
         for (int n = 0; n < TESTS; n++) {
@@ -88,7 +88,7 @@ public class Main {
                             var currentOperationsPerThread = operationsPerThread[l];
                             var currentProbabilityAdd = probabilities[m];
                             var csvWriter = originalCsvWriter;
-                            if (i>2) csvWriter = modifiedCsvWriter;
+                            if (i > 2) csvWriter = modifiedCsvWriter;
                             float avgTime = 0;
                             for (int n = 0; n < TESTS; n++) {
                                 avgTime += times[k][l][m][n][i];
