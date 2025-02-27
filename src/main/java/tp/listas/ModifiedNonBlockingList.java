@@ -2,8 +2,6 @@ package tp.listas;
 
 import java.util.concurrent.atomic.AtomicMarkableReference;
 
-import tp.listas.NonBlockingList.Window;
-
 public class ModifiedNonBlockingList<T> implements SynchronizedList<T> {
 
     public LocklessNode<T> head;

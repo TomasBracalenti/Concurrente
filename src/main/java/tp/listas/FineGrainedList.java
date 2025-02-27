@@ -50,7 +50,6 @@ public class FineGrainedList<T> implements SynchronizedList<T> {
             Node<T> curr = pred.next;
             curr.lock();
             try {
-                if (curr == tail) return false;
                 while (curr.key < key) {
                     pred.unlock();
                     pred = curr;
